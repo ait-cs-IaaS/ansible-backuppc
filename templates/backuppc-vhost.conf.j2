@@ -1,0 +1,42 @@
+{% if item.http|default(true) == true %}
+<VirtualHost *:80>
+	ServerName {{ item.name }}
+{% if item.aliases is defined and item.aliases|length %}
+	ServerAlias {{ item.aliases|join(' ') }}
+{% endif %}
+	DocumentRoot {{ backuppc_cgi_path }}
+	ErrorLog ${APACHE_LOG_DIR}/backuppc-error.log
+	CustomLog ${APACHE_LOG_DIR}/backuppc-access.log combined
+
+	RedirectMatch ^/$ /backuppc/
+
+	<IfModule mpm_itk_module>
+	AssignUserId {{ backuppc_web_user }} {{ backuppc_web_group }}
+	</IfModule>
+</VirtualHost>
+
+{% endif %}
+{% if item.https|default(false) == true %}
+<VirtualHost *:443>
+	ServerName {{ item.name }}
+{% if item.aliases is defined and item.aliases|length %}
+	ServerAlias {{ item.aliases|join(' ') }}
+{% endif %}
+	SSLEngine on
+	SSLCertificateFile  {{ apache2_ssl_cert_path }}/{{ item.cert|default("ssl-cert-snakeoil.pem") }}
+	SSLCertificateKeyFile {{ apache2_ssl_key_path }}/{{ item.key|default("ssl-cert-snakeoil.key") }}
+{% if item.certchain is defined and item.certchain|length %}
+	SSLCertificateChainFile {{ apache2_ssl_cert_path }}/{{ item.certchain }}
+{% endif %}
+	DocumentRoot {{ backuppc_cgi_path }}
+	ErrorLog ${APACHE_LOG_DIR}/backuppc-error.log
+	CustomLog ${APACHE_LOG_DIR}/backuppc-access.log combined
+
+	RedirectMatch ^/$ /backuppc/
+
+	<IfModule mpm_itk_module>
+	AssignUserId {{ backuppc_web_user }} {{ backuppc_web_group }}
+	</IfModule>
+</VirtualHost>
+
+{% endif %}

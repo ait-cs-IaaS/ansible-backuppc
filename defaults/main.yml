@@ -1,0 +1,33 @@
+---
+# defaults file for backuppc
+
+backuppc_service_user: backuppc
+backuppc_service_password: password
+backuppc_web_user: "{{ backuppc_service_user }}"
+backuppc_web_group: "{{ backuppc_service_user }}"
+backuppc_host: backuppc.example
+backuppc_aliases: []
+backuppc_ssl: false
+backuppc_http: true
+backuppc_htpasswd_path: /etc/backuppc/htpasswd
+backuppc_web_enabled: true
+
+backuppc_vhost_template: templates/backuppc-vhost.conf.j2
+backuppc_hosts_template: templates/etc/backuppc/hosts.j2
+backuppc_host_template: templates/etc/backuppc/host.pl.j2
+
+# backuppc_hosts: []
+backuppc_hosts: 
+    - host: 192.168.56.101
+      users: 
+        - user: test
+          password: test
+        - user: test2
+          password: test2
+      sync:
+        user: backup
+        password: backup
+        shares: 
+            - backuppc
+            - apache2
+

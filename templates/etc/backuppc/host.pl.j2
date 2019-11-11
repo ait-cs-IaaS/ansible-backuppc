@@ -1,0 +1,26 @@
+{% if item.sync.shares is defined and item.sync.shares|length %}
+$Conf{RsyncShareName} = [
+  {% for share in item.sync.shares %}
+  '{{ share }}'{{ ',' if not loop.last else '' }}
+  {% endfor %}
+];
+{% else %}
+$Conf{RsyncShareName} = [
+  '/'
+];
+{% endif %}
+{% if item.sync.only_files is defined and item.sync.only_files|length %}
+$Conf{BackupFilesOnly} = [
+  {% for only_file in item.sync.only_files  %}
+  '{{ only_file }}'{{ ',' if not loop.last else '' }}
+  {% endfor %}
+];
+{% endif %}
+{% if item.auth is not defined or item.auth|bool %}
+$Conf{RsyncdAuthRequired} = '1';
+$Conf{RsyncdPasswd} = '{{ item.sync.password }}';
+$Conf{RsyncdUserName} = '{{ item.sync.user }}';
+{% endif %}
+$Conf{XferMethod} = 'rsyncd';
+$Conf{FullPeriod} = '{{ item.sync.full_period|default("0.97",true) }}';
+$Conf{IncrPeriod} = '{{ item.sync.incr_period|default("0.24",true) }}';

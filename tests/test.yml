@@ -1,0 +1,5 @@
+---
+- hosts: "{{ test_host | default('localhost') }}"
+  roles:
+    - role: backuppc
+            

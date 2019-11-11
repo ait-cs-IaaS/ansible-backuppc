@@ -1,0 +1,18 @@
+---
+# vars file for backuppc
+
+backuppc_cgi_path: /usr/share/backuppc/cgi-bin
+
+backuppc_vhost:
+    name: "{{ backuppc_host }}"
+    http: "{{ backuppc_http }}"
+    https: "{{ backuppc_ssl }}"
+    aliases: "{{ backuppc_aliases }}"
+    copycerts: "{{ backuppc_ssl }}"
+    cert: "{{ backuppc_cert | default('', true)}}"
+    key: "{{ backuppc_key | default('', true)}}"
+    certchain: "{{ backuppc_certchain | default('', true)}}"
+    vhost_template: "{{ backuppc_vhost_template }}"
+    owner: "{{ backuppc_web_user }}"
+    group: "{{ backuppc_web_group }}"
+    enabled: "{{ backuppc_web_enabled }}"

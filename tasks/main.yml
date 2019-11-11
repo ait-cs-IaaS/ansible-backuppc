@@ -1,0 +1,99 @@
+---
+# tasks file for backuppc
+
+- name: Create users for configured backup hosts
+  debug:
+    msg: "{{ item.1.user }} -> {{ item.1.password }}"
+  loop: "{{ lookup('subelements', backuppc_hosts, 'users', {'skip_missing': True}) }}"
+  become: yes
+  tags: [install, config]
+
+- name: Create backuppc service user/group
+  user:
+    name: "{{ backuppc_service_user }}"
+    comment: BackupPC main user
+    shell: /usr/bin/nologin
+    state: present
+  become: yes
+  tags: [install, config]
+
+- name: Prepare apache install
+  include_role:
+      name: apache2 # required. The name of the role to be executed.
+      apply:
+        become: yes
+  vars:
+    apache2_vhosts: 
+        - "{{ backuppc_vhost }}"
+    apache2_user: "{{ backuppc_web_user }}"
+    apache2_group: "{{ backuppc_web_group }}"
+    apache2_packages: []
+  tags: [install, config]
+
+
+- name: Install backuppc software and utilities
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+        - backuppc
+        - rsync
+        - python-passlib
+        - python3-passlib
+        - libapache2-mpm-itk
+  become: yes
+  tags: [install]
+
+- name: Enable mpm_itk
+  command: a2enmod mpm_itk
+  args:
+    creates: /etc/apache2/mods-enabled/mpm_itk.load
+  notify: restart apache
+  become: yes 
+
+- name: Create htpasswd entry for main backuppc user
+  htpasswd:
+    path: "{{ backuppc_htpasswd_path }}"
+    name: "{{ backuppc_service_user }}"
+    password: "{{ backuppc_service_password }}"
+    owner: root
+    group: "{{ backuppc_web_group }}"
+    mode: 0640
+    state: present
+  become: yes
+  tags: [install, config]
+
+- name: Create users for configured backup hosts
+  htpasswd:
+    path: "{{ backuppc_htpasswd_path }}"
+    name: "{{ item.1.user }}"
+    password: "{{ item.1.password }}"
+    owner: root
+    group: "{{ backuppc_web_group }}"
+    mode: 0640
+    state: present
+  loop: "{{ lookup('subelements', backuppc_hosts, 'users', {'skip_missing': True}) }}"
+  become: yes
+  tags: [install, config]
+
+- name: Add the host configurations
+  template:
+    src: "{{ backuppc_host_template }}"
+    dest: /etc/backuppc/{{ item.host }}.pl
+    owner: "{{ backuppc_service_user }}"
+    group: "{{ backuppc_service_user }}"
+  loop: "{{ backuppc_hosts }}"
+  become: yes
+  tags: [config]
+
+- name: Add hosts to hosts configuration file
+  template:
+    src: "{{ backuppc_hosts_template }}"
+    dest: /etc/backuppc/hosts
+    owner: "{{ backuppc_service_user }}"
+    group: "{{ backuppc_service_user }}"
+  become: yes 
+  notify: restart backuppc
+    
+  

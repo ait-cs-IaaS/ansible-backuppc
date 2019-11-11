@@ -1,0 +1,2 @@
+- src: git@git-service.ait.ac.at:sct-cyberrange/ansible-roles/apache2.git
+  scm: git
