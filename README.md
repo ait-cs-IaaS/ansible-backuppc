@@ -24,8 +24,8 @@ Role Variables
 | backuppc_hosts_template | path | templates/etc/backuppc/hosts.j2 | Allows replacing the default template of the backuppc hosts configuration. |
 | backuppc_host_template | path | templates/etc/backuppc/host.pl.j2 | Allows replacing the default host configuration template. |
 
-*It is recommended to run the apache process as the service user, since access privileges might break otherwise. 
-**SSL is configured by the [apache2](https://git-service.ait.ac.at/sct-cyberrange/ansible-roles/apache2) (see details) role the required variables are made available with the prefix `backuppc_` (e.g., `backuppc_cert`). Certs are always copied from the host.
+*It is recommended to run the apache process as the service user, since access privileges might break otherwise.  
+**SSL is configured by the [apache2](https://git-service.ait.ac.at/sct-cyberrange/ansible-roles/apache2) (see details) role the required variables are made available with the prefix `backuppc_` (e.g., `backuppc_cert`). Certs are always copied from the host.  
 
 
 ### Backups
