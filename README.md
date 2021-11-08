@@ -1,10 +1,8 @@
-backuppc
-=========
+# Ansible Role backuppc
 
-This role installs and configures the backuppc server. 
+This role installs and configures the [BackupPC](https://backuppc.github.io/backuppc/) server.
 
-Role Variables
---------------
+## Role Variables
 
 ### System
 
@@ -48,19 +46,18 @@ Role Variables
 | dhcp | 0/1 | 0 | The dhcp value for the host (see [backuppc](http://backuppc.sourceforge.net/faq/BackupPC.html#Step-4:-Setting-up-the-hosts-file) for details) |
 
 
-Dependencies
-------------
+## Dependencies
 
 The role depends on the Cyber Range [apache2](https://git-service.ait.ac.at/sct-cyberrange/ansible-roles/apache2) role which can be installed through the requirements file.
 
 ```console
-$ ansible-galaxy install -r requirements.yml
+ansible-galaxy install -r requirements.yml
 ```
 
-Example Playbook
-----------------
+## Example Playbook
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+
 ```yaml
     - hosts: servers
       roles:
@@ -81,13 +78,10 @@ Including an example of how to use your role (for instance, with variables passe
                       - apache2
 ```
 
+## License
 
-License
--------
+GPL-3.0
 
-MIT
-
-Author Information
-------------------
+## Author Information
 
 Maximilian Frank
