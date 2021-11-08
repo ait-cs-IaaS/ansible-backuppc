@@ -1,11 +1,9 @@
 ---
-# tasks file for backuppc
-
 - name: Create users for configured backup hosts
   debug:
     msg: "{{ item.1.user }} -> {{ item.1.password }}"
   loop: "{{ lookup('subelements', backuppc_hosts, 'users', {'skip_missing': True}) }}"
-  become: yes
+  become: true
   tags: [install, config]
 
 - name: Create backuppc service user/group
@@ -14,17 +12,17 @@
     comment: BackupPC main user
     shell: /usr/bin/nologin
     state: present
-  become: yes
+  become: true
   tags: [install, config]
 
 - name: Prepare apache install
   include_role:
-      name: apache2 # required. The name of the role to be executed.
-      apply:
-        become: yes
+    name: apache2
+    apply:
+      become: true
   vars:
-    apache2_vhosts: 
-        - "{{ backuppc_vhost }}"
+    apache2_vhosts:
+      - "{{ backuppc_vhost }}"
     apache2_user: "{{ backuppc_web_user }}"
     apache2_group: "{{ backuppc_web_group }}"
     apache2_packages: []
@@ -37,12 +35,12 @@
     state: present
   vars:
     packages:
-        - backuppc
-        - rsync
-        - python-passlib
-        - python3-passlib
-        - libapache2-mpm-itk
-  become: yes
+      - backuppc
+      - rsync
+      - python-passlib
+      - python3-passlib
+      - libapache2-mpm-itk
+  become: true
   tags: [install]
 
 - name: Enable mpm_itk
@@ -50,7 +48,7 @@
   args:
     creates: /etc/apache2/mods-enabled/mpm_itk.load
   notify: restart apache
-  become: yes 
+  become: true
 
 - name: Create htpasswd entry for main backuppc user
   htpasswd:
@@ -61,7 +59,7 @@
     group: "{{ backuppc_web_group }}"
     mode: 0640
     state: present
-  become: yes
+  become: true
   tags: [install, config]
 
 - name: Create users for configured backup hosts
@@ -74,7 +72,7 @@
     mode: 0640
     state: present
   loop: "{{ lookup('subelements', backuppc_hosts, 'users', {'skip_missing': True}) }}"
-  become: yes
+  become: true
   tags: [install, config]
 
 - name: Add the host configurations
@@ -83,8 +81,9 @@
     dest: /etc/backuppc/{{ item.host }}.pl
     owner: "{{ backuppc_service_user }}"
     group: "{{ backuppc_service_user }}"
+    mode: 0640
   loop: "{{ backuppc_hosts }}"
-  become: yes
+  become: true
   tags: [config]
 
 - name: Add hosts to hosts configuration file
@@ -93,7 +92,6 @@
     dest: /etc/backuppc/hosts
     owner: "{{ backuppc_service_user }}"
     group: "{{ backuppc_service_user }}"
-  become: yes 
+    mode: 0640
+  become: true
   notify: restart backuppc
-    
-  

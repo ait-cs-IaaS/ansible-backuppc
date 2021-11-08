@@ -2,8 +2,8 @@
 # handlers file for backuppc
 - name: restart apache2
   service: name=apache2 state=restarted
-  become: yes
+  become: true
 
 - name: restart backuppc
   service: name=backuppc state=restarted
-  become: yes
+  become: true
